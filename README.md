@@ -1,34 +1,14 @@
-**Table of Contents:**
 
-1. [About 📖](#about-)
-2. [Getting started 🚀](#getting-started-)
-   1. [1. Run the frontend](#1-run-the-frontend)
-   2. [2. Build \& deploy contracts on a local node](#2-build--deploy-contracts-on-a-local-node)
-   3. [3. Connect the frontend to the local node](#3-connect-the-frontend-to-the-local-node)
-3. [Customization 🎨](#customization-)
-   1. [1. Project Name](#1-project-name)
-   2. [2. Custom Contracts](#2-custom-contracts)
-   3. [3. Custom Scripts](#3-custom-scripts)
-4. [The Stack 🥞](#the-stack-)
-5. [Live Examples 🌐](#live-examples-)
-6. [Deployment 🚢](#deployment-)
-   1. [Environment Variables](#environment-variables)
-   2. [Contract Deployment](#contract-deployment)
-7. [VSCode Setup 🛠](#vscode-setup-)
-   1. [Workspace](#workspace)
-   2. [Plugins](#plugins)
-8. [FAQs \& Troubleshooting 💬](#faqs--troubleshooting-)
-
----
 
 ## About 📖
 
 The boilerplate comes with a small sample ink! `Greeter` contract which stores a `message` (the "greeting") and allows anyone to update it. The frontend contains simple UI components to connect your wallet and interact with the contract (i.e. read & write the `message`). Try it out live on [inkathon.xyz](https://inkathon.xyz).
 
 The contracts directory contains the following folders:
-- `src/` – Contains the `Greeter` contract
-        - Contains the `Chronicle` contract
-        - Contains the `Insurance` contract
+- `src/`
+ 1. Contains the `Greeter` contract
+ 2. Contains the `Chronicle` contract
+ 3. Contains the `Insurance` contract
 
 - `deployments/` – Contains the deployment artifacts for the `Greeter`, `Chronicle`, `Insurance`, contracts
 - `scripts/` – Contains scripts to build, test, and deploy the contracts
