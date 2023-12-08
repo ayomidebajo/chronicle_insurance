@@ -2,8 +2,6 @@
 
 ## About 📖
 
-The boilerplate comes with a small sample ink! `Greeter` contract which stores a `message` (the "greeting") and allows anyone to update it. The frontend contains simple UI components to connect your wallet and interact with the contract (i.e. read & write the `message`). Try it out live on [inkathon.xyz](https://inkathon.xyz).
-
 The contracts directory contains the following folders:
 - `src/`
  1. Contains the `Greeter` contract
@@ -13,6 +11,7 @@ The contracts directory contains the following folders:
 - `deployments/` – Contains the deployment artifacts for the `Greeter`, `Chronicle`, `Insurance`, contracts
 - `scripts/` – Contains scripts to build, test, and deploy the contracts
 
+The Obd directory contains more information about the Obd project. For more information about how to run the obd project, please refer to the README.md file in the obd directory.
 
 
 ## Getting started 🚀
@@ -57,32 +56,8 @@ pnpm run dev
 
 Optionally, to enable [`simple-git-hooks`](https://github.com/toplenboren/simple-git-hooks) (for automatic linting & formatting when committing), you can run the following command once: `pnpm simple-git-hooks`.
 
-### 2. Build & deploy contracts on a local node
-
-The `contracts/package.json` file contains shorthand scripts for building, testing, and deploying your contracts. To run these scripts, you need to set `contracts/` as the active working directory in your terminal.
-
-> **Pre-requisites:**
->
-> - Install Rust via the [Substrate Docs](https://docs.substrate.io/install/) (skip the "Compile a Substrate node" section)
-> - Install [`cargo contract`](https://github.com/paritytech/cargo-contract)
-> - Install [`substrate-contracts-node`](https://github.com/paritytech/substrate-contracts-node)
-
-```bash
-# Build contracts and move artifacts to `contracts/deployments/{contract}/` folders
-pnpm run build
-
-# Start local node with persistence (contracts stay deployed after restart)
-# NOTE: When using Brave, shields have to be taken down for the UIs
-pnpm run node
-
-## IMPORTANT: Open a separate terminal window and keep the node running
-
-# Deploy the contracts on the local node
-pnpm run deploy
-```
-
-Alternatively, you can also deploy contracts manually using [Contracts UI](https://contracts-ui.substrate.io/) (`pnpm contracts-ui`) in the browser.
-
+### 2. install the requirements.txt in obd
+   Please read the README.md file in the obd directory for more information.
 
 ## Customization 🎨
 
