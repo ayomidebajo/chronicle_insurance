@@ -1,84 +1,41 @@
+import { useInsuranceContracts } from '@/contexts/Insurance'
 import { ContractIds } from '@/deployments/deployments'
-import { contractTxWithToast } from '@/utils/contractTxWithToast'
 import { Button, Card, FormControl, FormLabel, Input, Stack } from '@chakra-ui/react'
-import {
-  contractQuery,
-  decodeOutput,
-  useInkathon,
-  useRegisteredContract,
-} from '@scio-labs/use-inkathon'
+import { useInkathon, useRegisteredContract } from '@scio-labs/use-inkathon'
 import { FC, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import toast from 'react-hot-toast'
 import 'twin.macro'
 
-type UpdateGreetingValues = { newMessage: string }
+type UpdateGreetingValues = { data: string }
 
 export const GreeterContractInteractions: FC = () => {
-  const { api, activeAccount, activeSigner } = useInkathon()
+  const [isPremium, setIsPremium] = useState<boolean>()
+  const { api } = useInkathon()
+  const { isSubmitting, veryifyUserIsPremium, purchaseInsurance } = useInsuranceContracts()
   const { contract, address: contractAddress } = useRegisteredContract(ContractIds.Greeter)
-  const [greeterMessage, setGreeterMessage] = useState<string>()
-  const [fetchIsLoading, setFetchIsLoading] = useState<boolean>()
-  const [updateIsLoading, setUpdateIsLoading] = useState<boolean>()
-  const { register, reset, handleSubmit } = useForm<UpdateGreetingValues>()
+  const { register, handleSubmit } = useForm<UpdateGreetingValues>()
 
-  // Fetch Greeting
-  const fetchGreeting = async () => {
-    if (!contract || !api) return
-
-    setFetchIsLoading(true)
-    try {
-      const result = await contractQuery(api, '', contract, 'greet')
-      const { output, isError, decodedOutput } = decodeOutput(result, contract, 'greet')
-      if (isError) throw new Error(decodedOutput)
-      setGreeterMessage(output)
-    } catch (e) {
-      console.error(e)
-      toast.error('Error while fetching greeting. Try again…')
-      setGreeterMessage(undefined)
-    } finally {
-      setFetchIsLoading(false)
-    }
-  }
   useEffect(() => {
-    fetchGreeting()
+    veryifyUserIsPremium('X5vJBYgFYgbjkAp5buX9F7oVtpxN2ZiAKuiwQnCckjKspDD').then((isPremium) =>
+      setIsPremium(isPremium || undefined),
+    )
   }, [contract])
 
-  // Update Greeting
-  const updateGreeting = async ({ newMessage }: UpdateGreetingValues) => {
-    if (!activeAccount || !contract || !activeSigner || !api) {
-      toast.error('Wallet not connected. Try again…')
-      return
-    }
-
-    // Send transaction
-    setUpdateIsLoading(true)
-    try {
-      await contractTxWithToast(api, activeAccount.address, contract, 'setMessage', {}, [
-        newMessage,
-      ])
-      reset()
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setUpdateIsLoading(false)
-      fetchGreeting()
-    }
-  }
+  console.log({ isPremium, isSubmitting })
 
   if (!api) return null
 
   return (
     <>
       <div tw="flex grow flex-col space-y-4 max-w-[20rem]">
-        <h2 tw="text-center font-mono text-gray-400">Greeter Smart Contract</h2>
+        <h2 tw="text-center font-mono text-gray-400">Insurance Smart Contract</h2>
 
         {/* Fetched Greeting */}
         <Card variant="outline" p={4} bgColor="whiteAlpha.100">
           <FormControl>
-            <FormLabel>Fetched Greeting</FormLabel>
+            <FormLabel>Is User Premium?</FormLabel>
             <Input
-              placeholder={fetchIsLoading || !contract ? 'Loading…' : greeterMessage}
+              placeholder={isSubmitting || !contract ? 'Loading…' : isPremium?.toString()}
               disabled={true}
             />
           </FormControl>
@@ -86,19 +43,13 @@ export const GreeterContractInteractions: FC = () => {
 
         {/* Update Greeting */}
         <Card variant="outline" p={4} bgColor="whiteAlpha.100">
-          <form onSubmit={handleSubmit(updateGreeting)}>
+          <form onSubmit={handleSubmit(({ data }) => purchaseInsurance(Number(data)))}>
             <Stack direction="row" spacing={2} align="end">
               <FormControl>
-                <FormLabel>Update Greeting</FormLabel>
-                <Input disabled={updateIsLoading} {...register('newMessage')} />
+                <FormLabel>Purchase Insurance</FormLabel>
+                <Input disabled={isSubmitting} {...register('data')} />
               </FormControl>
-              <Button
-                type="submit"
-                mt={4}
-                colorScheme="purple"
-                isLoading={updateIsLoading}
-                disabled={updateIsLoading}
-              >
+              <Button type="submit" mt={4} colorScheme="purple" disabled={isSubmitting}>
                 Submit
               </Button>
             </Stack>

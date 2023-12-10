@@ -1,6 +1,7 @@
 import { BaseLayout } from '@/components/layout/BaseLayout'
 import { HotToastConfig } from '@/components/layout/HotToastConfig'
 import { env } from '@/config/environment'
+import InsuranceContractContextProvider from '@/contexts/Insurance'
 import { getDeployments } from '@/deployments/deployments'
 import GlobalStyles from '@/styles/GlobalStyles'
 import { ChakraProvider, DarkMode } from '@chakra-ui/react'
@@ -60,19 +61,21 @@ function MyApp({ Component, pageProps }: AppProps) {
         defaultChain={env.defaultChain}
         deployments={getDeployments()}
       >
-        <CacheProvider value={cache}>
-          <ChakraProvider>
-            <DarkMode>
-              <GlobalStyles />
+        <InsuranceContractContextProvider>
+          <CacheProvider value={cache}>
+            <ChakraProvider>
+              <DarkMode>
+                <GlobalStyles />
 
-              <BaseLayout>
-                <Component {...pageProps} />
-              </BaseLayout>
+                <BaseLayout>
+                  <Component {...pageProps} />
+                </BaseLayout>
 
-              <HotToastConfig />
-            </DarkMode>
-          </ChakraProvider>
-        </CacheProvider>
+                <HotToastConfig />
+              </DarkMode>
+            </ChakraProvider>
+          </CacheProvider>
+        </InsuranceContractContextProvider>
       </UseInkathonProvider>
     </>
   )
