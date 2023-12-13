@@ -14,6 +14,12 @@ The contracts directory contains the following folders:
 The Obd directory contains more information about the Obd project. For more information about how to run the obd project, please refer to the README.md file in the obd directory.
 
 
+###
+Mock data
+
+We stored some mock data from the car for user's who don't use a linux laptop, The mock data is stored in `response.json`
+
+
 ## Getting started 🚀
 
 ### 1. Run the frontend
@@ -148,11 +154,5 @@ When running the same script again, this deployer account defined there will be 
 > [!WARNING]  
 > These files are gitignored by default, but you should still be extra cautious when adding sensitive information to them.
 
-## VSCode Setup 🛠
 
-### Workspace
-
-It's recommended to develop in VSCode by opening the workspace file `inkathon.code-workspace` instead of just the plain directory. This approach offers multiple advantages, including a more predictable monorepo configuration. VSCode will also automatically suggest switching to the workspace when opening the project's root directory in the bottom right corner.
-
-<img src="inkathon-vscode-workspace.png" width="400" alt="VSCode Workspace Notification">
 
