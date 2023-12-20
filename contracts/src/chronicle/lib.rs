@@ -2,6 +2,7 @@
 
 #[ink::contract]
 mod chronicle {
+
     use ink::{prelude::string::String, prelude::vec::Vec, storage::Mapping};
     use scale::{Decode, Encode};
 
@@ -17,6 +18,7 @@ mod chronicle {
         car_identity: String,
         owner: AccountId,
     }
+    
     const DEFAULT_PREMIUM: Balance = 100;
 
     #[derive(Encode, Decode, Debug, PartialEq, Clone)]
@@ -137,10 +139,8 @@ mod chronicle {
             model: String,
             vin: String,
             logs: Vec<Log>,
-            owner: AccountId,
         ) -> Result<CarData, Error> {
-            // ensure contract caller is the owner
-            assert_eq!(self.env().caller(), owner);
+            let owner = self.env().caller();
 
             // ensure car is not already registered
             assert!(!self.cars.contains(&vin));
@@ -155,8 +155,10 @@ mod chronicle {
                 None => Ok(()),
             };
 
-            // ensure owner is already registered
-            assert!(!self.owners.contains(&owner));
+            // ensure owner user has paid for insurance
+            assert!((self.is_premium(owner.clone())).expect("No insurance"));
+
+            // assert!(self.owners.contains(&owner)); // are you saying this is always going to  be true?
 
             // ensure car has at least one log
             assert!(logs.len() > 0);
@@ -183,14 +185,13 @@ mod chronicle {
         }
 
         #[ink(message)]
-        pub fn update_car_logs(
-            &mut self,
-            vin: String,
-            logs: Vec<Log>,
-            owner: AccountId,
-        ) -> Result<CarData, Error> {
+        pub fn update_car_logs(&mut self, vin: String, logs: Vec<Log>) -> Result<CarData, Error> {
             // ensure contract caller is the owner
-            assert_eq!(self.env().caller(), owner);
+            let owner = self.env().caller();
+
+            // has premium
+            assert!((self.is_premium(owner.clone())).expect("No insurance"));
+
             // ensure car is already registered
             let mut car = self.cars.get(&vin).ok_or(Error::CarNotFound)?;
             car.log.extend(logs);
@@ -199,8 +200,11 @@ mod chronicle {
         }
 
         #[ink(message)]
-        pub fn is_premium(&self, user: AccountId) -> bool {
-            self.insurance_premiums.get(&user).is_some()
+        pub fn is_premium(&self, user: AccountId) -> Result<bool, Error> {
+            match self.insurance_premiums.get(&user) {
+                Some(_) => Ok(true),
+                None => Err(Error::NoInsurance),
+            }
         }
 
         #[ink(message)]
@@ -238,5 +242,62 @@ mod chronicle {
         }
     }
 
-    
+    #[cfg(test)]
+    mod tests {
+
+        use ink_env::test;
+
+        use super::*;
+
+        fn default_accounts() -> test::DefaultAccounts<Environment> {
+            ink::env::test::default_accounts::<Environment>()
+        }
+
+        fn set_caller(sender: AccountId) {
+            ink::env::test::set_caller::<Environment>(sender);
+        }
+
+        #[ink::test]
+        #[should_panic(expected = "No insurance")]
+        pub fn test_add_car_without_insurance() {
+            let mut contract = Chronicle::new();
+            let model = String::from("Toyota");
+            let vin = String::from("123456789");
+            let logs = vec![Log {
+                command: CarCommand::EngineLoad,
+                value: String::from("10"),
+                desc: String::from("Engine Load"),
+                command_code: String::from("01"),
+                ecu: 1,
+                timestamp: 123456789,
+            }];
+            let car = contract.add_car(model, vin, logs).unwrap();
+            assert_eq!(car.model, String::from("Toyota"));
+            assert_eq!(car.vin, String::from("123456789"));
+            assert_eq!(car.log.len(), 1);
+        }
+
+        #[ink::test]
+        pub fn test_add_car_with_insurance() {
+            let user = default_accounts().alice;
+
+            let mut contract = Chronicle::new();
+            let model = String::from("Toyota");
+            let vin = String::from("123456789");
+            let logs = vec![Log {
+                command: CarCommand::EngineLoad,
+                value: String::from("10"),
+                desc: String::from("Engine Load"),
+                command_code: String::from("01"),
+                ecu: 1,
+                timestamp: 123456789,
+            }];
+
+            set_caller(user);
+            contract.purchase_insurance(100).unwrap();
+            let car = contract.add_car(model, vin, logs);
+
+            assert!(car.is_ok());
+        }
+    }
 }
