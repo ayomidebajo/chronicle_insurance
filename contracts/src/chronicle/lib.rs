@@ -18,7 +18,7 @@ mod chronicle {
         car_identity: String,
         owner: AccountId,
     }
-    
+
     const DEFAULT_PREMIUM: Balance = 100;
 
     #[derive(Encode, Decode, Debug, PartialEq, Clone)]
@@ -80,7 +80,8 @@ mod chronicle {
 
     #[ink(storage)]
     pub struct Chronicle {
-        cars: Mapping<String, CarData>,
+        cars_by_vin: Mapping<String, CarData>,
+        cars: Vec<CarData>,
         owners: Mapping<AccountId, Vec<String>>,
         insurance_premiums: Mapping<AccountId, Balance>,
         has_insurance: Mapping<AccountId, bool>,
@@ -104,11 +105,13 @@ mod chronicle {
     impl Chronicle {
         #[ink(constructor)]
         pub fn new() -> Self {
-            let cars = Mapping::default();
+            let cars_by_vin = Mapping::default();
             let owners = Mapping::default();
             let insurance_premiums = Mapping::default();
             let has_insurance = Mapping::default();
+            let cars = Vec::new();
             Self {
+                cars_by_vin,
                 cars,
                 owners,
                 insurance_premiums,
@@ -118,12 +121,12 @@ mod chronicle {
 
         #[ink(message)]
         pub fn get_single_car(&self, vin: String) -> Result<CarData, Error> {
-            self.cars.get(vin).ok_or(Error::CarNotFound)
+            self.cars_by_vin.get(vin).ok_or(Error::CarNotFound)
         }
 
         #[ink(message)]
         /// Returns the list of cars owned by a single owner, returns an error if the owner is not found
-        pub fn get_cars_owned_by_single_ower(
+        pub fn get_cars_owned_by_single_owner(
             &self,
             owner: AccountId,
         ) -> Result<Vec<String>, Error> {
@@ -143,11 +146,11 @@ mod chronicle {
             let owner = self.env().caller();
 
             // ensure car is not already registered
-            assert!(!self.cars.contains(&vin));
+            assert!(!self.cars_by_vin.contains(&vin));
 
             // redundant check neccessary to avoid error
             let cars_owned_by_owner = self
-                .get_cars_owned_by_single_ower(owner.clone())
+                .get_cars_owned_by_single_owner(owner.clone())
                 .unwrap_or(Vec::new());
 
             let _car_index = match cars_owned_by_owner.iter().position(|v| v == &vin) {
@@ -171,7 +174,7 @@ mod chronicle {
                 owner,
             };
 
-            self.cars.insert(vin.clone(), &car);
+            self.cars_by_vin.insert(vin.clone(), &car);
 
             // since the owner is already registered, let's just add the car to the owner's list of cars
 
@@ -180,6 +183,9 @@ mod chronicle {
 
             // insert owner with the new car
             self.owners.insert(owner, &owner_cars);
+            
+            // insert car into the list of cars
+            self.cars.push(car.clone());
 
             Ok(car)
         }
@@ -193,7 +199,7 @@ mod chronicle {
             assert!((self.is_premium(owner.clone())).expect("No insurance"));
 
             // ensure car is already registered
-            let mut car = self.cars.get(&vin).ok_or(Error::CarNotFound)?;
+            let mut car = self.cars_by_vin.get(&vin).ok_or(Error::CarNotFound)?;
             car.log.extend(logs);
 
             Ok(car.clone())
@@ -236,7 +242,7 @@ mod chronicle {
         }
         #[ink(message)]
         pub fn check_single_car_health(&self, vin: String) -> Result<Vec<Log>, Error> {
-            let car = self.cars.get(&vin).ok_or(Error::CarNotFound)?;
+            let car = self.cars_by_vin.get(&vin).ok_or(Error::CarNotFound)?;
             let logs = car.log.clone();
             Ok(logs)
         }
@@ -245,7 +251,7 @@ mod chronicle {
     #[cfg(test)]
     mod tests {
 
-        use ink_env::test;
+        use ink::env::test;
 
         use super::*;
 
