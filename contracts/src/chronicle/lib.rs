@@ -157,6 +157,12 @@ mod chronicle {
         ) -> Result<CarData, Error> {
             let owner = self.env().caller();
 
+            // ensure owner user has paid for insurance
+            match self.is_premium(owner.clone()) {
+                Ok(_) => (),
+                Err(_) => return Err(Error::NoInsurance),
+            }
+
             // ensure car is not already registered
             assert!(!self.cars_by_vin.contains(&vin));
 
@@ -169,11 +175,6 @@ mod chronicle {
                 Some(_) => Err(Error::CarAlreadyRegistered),
                 None => Ok(()),
             };
-
-            // ensure owner user has paid for insurance
-            assert!((self.is_premium(owner.clone())).expect("No insurance"));
-
-            // assert!(self.owners.contains(&owner)); // are you saying this is always going to  be true?
 
             // ensure car has at least one log
             assert!(logs.len() > 0);
@@ -280,6 +281,7 @@ mod chronicle {
 
             let average_distance_with_milage = Self::calculate_average_distance_with_milage(&logs);
 
+            // calculate car health based on average distance with milage
             if average_distance_with_milage > 40000 && average_distance_with_milage < 3000000 {
                 Ok(CarHealth::Excellent)
             } else if average_distance_with_milage > 40000 && average_distance_with_milage < 4000000
@@ -312,7 +314,6 @@ mod chronicle {
 
         #[ink(message)]
         pub fn predict_car_market_value(&self, vin: String) -> Result<u64, Error> {
-
             let _car = self.cars_by_vin.get(&vin).ok_or(Error::CarNotFound)?;
 
             // get car's health

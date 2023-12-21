@@ -1,6 +1,6 @@
 {
   "source": {
-    "hash": "0x47b94472f0f546d6d53784cf5d4c5acb0ffb3661a01c50d87db5363673e9a81e",
+    "hash": "0x6d6c524780e5d76c878c4bb4d6491b91dcd8148a1b86f0429cf19bb7f3b5842c",
     "language": "ink! 4.3.0",
     "compiler": "rustc 1.73.0",
     "build_info": {
@@ -56,19 +56,19 @@
         "displayName": [
           "BlockNumber"
         ],
-        "type": 29
+        "type": 35
       },
       "chainExtension": {
         "displayName": [
           "ChainExtension"
         ],
-        "type": 30
+        "type": 36
       },
       "hash": {
         "displayName": [
           "Hash"
         ],
-        "type": 28
+        "type": 34
       },
       "maxEventTopics": 4,
       "timestamp": {
@@ -369,7 +369,7 @@
         ],
         "default": false,
         "docs": [],
-        "label": "check_single_car_health",
+        "label": "check_single_car_logs",
         "mutates": false,
         "payable": false,
         "returnType": {
@@ -379,7 +379,75 @@
           ],
           "type": 26
         },
-        "selector": "0xe04b6e99"
+        "selector": "0xead2d13b"
+      },
+      {
+        "args": [],
+        "default": false,
+        "docs": [],
+        "label": "get_all_cars",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 28
+        },
+        "selector": "0xa7dfd4e0"
+      },
+      {
+        "args": [
+          {
+            "label": "vin",
+            "type": {
+              "displayName": [
+                "String"
+              ],
+              "type": 0
+            }
+          }
+        ],
+        "default": false,
+        "docs": [],
+        "label": "get_single_car_health",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 29
+        },
+        "selector": "0xb92ef810"
+      },
+      {
+        "args": [
+          {
+            "label": "vin",
+            "type": {
+              "displayName": [
+                "String"
+              ],
+              "type": 0
+            }
+          }
+        ],
+        "default": false,
+        "docs": [],
+        "label": "predict_car_market_value",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 32
+        },
+        "selector": "0xe3f8a921"
       }
     ]
   },
@@ -1306,6 +1374,248 @@
       "id": 28,
       "type": {
         "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 8
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 15
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 8
+          },
+          {
+            "name": "E",
+            "type": 15
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 29,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 30
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 15
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 30
+          },
+          {
+            "name": "E",
+            "type": 15
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 30,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 31
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 18
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 31
+          },
+          {
+            "name": "E",
+            "type": 18
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 31,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "index": 0,
+                "name": "Good"
+              },
+              {
+                "index": 1,
+                "name": "Bad"
+              },
+              {
+                "index": 2,
+                "name": "Fair"
+              },
+              {
+                "index": 3,
+                "name": "Excellent"
+              }
+            ]
+          }
+        },
+        "path": [
+          "chronicle",
+          "chronicle",
+          "CarHealth"
+        ]
+      }
+    },
+    {
+      "id": 32,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 33
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 15
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 33
+          },
+          {
+            "name": "E",
+            "type": 15
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 33,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 5
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 18
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 5
+          },
+          {
+            "name": "E",
+            "type": 18
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 34,
+      "type": {
+        "def": {
           "composite": {
             "fields": [
               {
@@ -1323,7 +1633,7 @@
       }
     },
     {
-      "id": 29,
+      "id": 35,
       "type": {
         "def": {
           "primitive": "u32"
@@ -1331,7 +1641,7 @@
       }
     },
     {
-      "id": 30,
+      "id": 36,
       "type": {
         "def": {
           "variant": {}
