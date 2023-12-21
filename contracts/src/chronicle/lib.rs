@@ -124,6 +124,8 @@ mod chronicle {
             self.cars_by_vin.get(vin).ok_or(Error::CarNotFound)
         }
 
+        
+
         #[ink(message)]
         /// Returns the list of cars owned by a single owner, returns an error if the owner is not found
         pub fn get_cars_owned_by_single_owner(
