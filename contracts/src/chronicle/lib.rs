@@ -19,7 +19,7 @@ mod chronicle {
         owner: AccountId,
     }
 
-    const DEFAULT_PREMIUM: Balance = 100;
+    const DEFAULT_PREMIUM: Balance = 1;
 
     #[derive(Encode, Decode, Debug, PartialEq, Clone)]
     #[cfg_attr(
@@ -58,6 +58,7 @@ mod chronicle {
         AlreadyHasInsurance,
         NoInsurance,
         NoPremiumProvided,
+        ExpectedPayment,
         BalanceTooLow,
         CarAlreadyRegistered,
     }
@@ -240,27 +241,57 @@ mod chronicle {
         }
 
         #[ink(message, payable)]
-        pub fn purchase_insurance(&mut self, premium: Balance) -> Result<(), Error> {
+        pub fn purchase_insurance(&mut self) -> Result<(), Error> {
             let caller = self.env().caller();
 
             if self.has_insurance(caller.clone()) {
                 return Err(Error::AlreadyHasInsurance);
             }
 
-            if premium == 0 {
-                return Err(Error::NoPremiumProvided);
+
+            let transfered_val = self.env().transferred_value();
+
+            if transfered_val < DEFAULT_PREMIUM {
+                return Err(Error::ExpectedPayment);
             }
 
-            self.insurance_premiums.insert(caller, &DEFAULT_PREMIUM);
-            self.has_insurance.insert(caller, &true);
+            let transfered_val = self.env().transferred_value();
 
-            self.env().emit_event(InsurancePurchased {
-                user: caller,
-                premium,
-            });
+            assert!(
+                transfered_val == DEFAULT_PREMIUM,
+                "{}",
+                format!("Please pay complete amount which is {}", DEFAULT_PREMIUM)
+            );
 
-            Ok(())
+            ink::env::debug_println!("Expected value: {}", DEFAULT_PREMIUM);
+            ink::env::debug_println!(
+                "Expected received payment without conversion: {}",
+                transfered_val
+            ); // we are printing the expected value as is
+
+            // make payment
+            match self
+                .env()
+                .transfer(self.env().account_id(), DEFAULT_PREMIUM)
+            {
+                Ok(_) => {
+                    // Emit event
+                    self.env().emit_event(InsurancePurchased {
+                        user: caller,
+                        premium: DEFAULT_PREMIUM,
+                    });
+
+                    // Push to storage
+                    self.insurance_premiums.insert(caller, &DEFAULT_PREMIUM);
+                    self.has_insurance.insert(caller, &true);
+                    
+                    Ok(())
+                }
+                Err(_) => Err(Error::TransactionFailed)?,
+            }
+
         }
+
 
         #[ink(message)]
         pub fn check_single_car_logs(&self, vin: String) -> Result<Vec<Log>, Error> {
@@ -356,7 +387,7 @@ mod chronicle {
         }
 
         #[ink::test]
-        #[should_panic(expected = "No insurance")]
+        #[should_panic(expected = "NoInsurance")]
         pub fn test_add_car_without_insurance() {
             let mut contract = build_contract();
             let model = String::from("Toyota");
@@ -377,9 +408,30 @@ mod chronicle {
 
         #[ink::test]
         pub fn test_add_car_with_insurance() {
-            let user = default_accounts().alice;
+            let user = default_accounts();
+            let initial_bal =
+                ink::env::test::get_account_balance::<Environment>(user.alice).expect("No balance");
+
+            print!("Initial balance: {}", initial_bal);
 
             let mut contract = build_contract();
+
+            //  set callee to the contract
+            ink::env::test::set_callee::<ink::env::DefaultEnvironment>(user.alice);
+
+            // set caller which is the customer_account in this case
+            set_caller(user.bob);
+
+            ink::env::test::set_value_transferred::<ink::env::DefaultEnvironment>(
+                DEFAULT_PREMIUM,
+            );
+
+            ink::env::test::transfer_in::<ink::env::DefaultEnvironment>(
+                DEFAULT_PREMIUM,
+            );
+
+            contract.purchase_insurance().unwrap();
+
             let model = String::from("Toyota");
             let vin = String::from("123456789");
             let logs = vec![Log {
@@ -391,11 +443,15 @@ mod chronicle {
                 timestamp: 123456789,
             }];
 
-            set_caller(user);
-            contract.purchase_insurance(100).unwrap();
-            let car = contract.add_car(model, vin, logs);
+            set_caller(user.alice);
+            contract.purchase_insurance().unwrap();
+            let car = contract.add_car(model, vin.clone(), logs);
 
             assert!(car.is_ok());
+
+            // check if car has been added by getting a single car
+            assert!(contract.get_single_car(vin.clone()).is_ok());
+
         }
     }
 }
