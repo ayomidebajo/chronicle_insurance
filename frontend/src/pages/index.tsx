@@ -1,9 +1,4 @@
-import { HomePageTitle } from '@/components/home/HomePageTitle'
-import { HomeTopBar } from '@/components/home/HomeTopBar'
-import { CenterBody } from '@/components/layout/CenterBody'
-import { ChainInfo } from '@/components/web3/ChainInfo'
-import { ConnectButton } from '@/components/web3/ConnectButton'
-import { GreeterContractInteractions } from '@/components/web3/GreeterContractInteractions'
+import { RegisterAccountView } from '@/components/modals/RegisterOwner'
 import { useInkathon } from '@scio-labs/use-inkathon'
 import type { NextPage } from 'next'
 import { useEffect } from 'react'
@@ -20,24 +15,18 @@ const HomePage: NextPage = () => {
 
   return (
     <>
-      {/* Top Bar */}
-      {/* <HomeTopBar /> */}
+      <div tw="mb-10 px-5 pt-10">
+        <div tw="mt-20 flex w-full items-center justify-between rounded-md bg-slate-100 px-16 py-6">
+          <h2 tw="font-bold text-3xl">Cars Owned</h2>
 
-      <CenterBody tw="mt-20 mb-10 px-5">
-        {/* Title */}
-        {/* <HomePageTitle /> */}
-
-        {/* Connect Wallet Button */}
-        <ConnectButton />
-
-        <div tw="mt-10 flex w-full flex-wrap items-start justify-center gap-4">
-          {/* Chain Metadata Information */}
-          {/* <ChainInfo /> */}
-
-          {/* Greeter Read/Write Contract Interactions */}
-          <GreeterContractInteractions />
+          <div>
+            <RegisterAccountView />
+            {/* <CreateProposalView /> */}
+          </div>
         </div>
-      </CenterBody>
+
+        <section></section>
+      </div>
     </>
   )
 }

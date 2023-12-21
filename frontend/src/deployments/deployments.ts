@@ -23,6 +23,14 @@ export const getDeployments = async (): Promise<SubstrateDeployment[]> => {
         ),
         address: 'bTDpjqEahB2KeUnaUoCfqVyv979GVht6zZY4H5DnAyvm6jP',
       },
+      {
+        contractId: ContractIds.Chronicle,
+        networkId: network,
+        abi: await import(
+          `@inkathon/contracts/deployments/${ContractIds.Chronicle}/${ContractIds.Chronicle}.json`
+        ),
+        address: 'ZSxc6CVSokuMmbuHxxmrjgi1xnfNxt5FEamvKNPEeRHvrT6',
+      },
     ])
     .reduce(async (acc, curr) => [...(await acc), ...(await curr)], [] as any)
 
