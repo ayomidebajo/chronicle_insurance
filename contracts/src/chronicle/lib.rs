@@ -35,6 +35,18 @@ mod chronicle {
         timestamp: u64,
     }
 
+    #[derive(Encode, Decode, Debug, PartialEq, Clone)]
+    #[cfg_attr(
+        feature = "std",
+        derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
+    )]
+    pub enum CarHealth {
+        Good,
+        Bad,
+        Fair,
+        Excellent,
+    }
+
     /// Errors that can occur upon calling this contract.
     #[derive(Copy, Clone, Debug, PartialEq, Eq, scale::Encode, scale::Decode)]
     #[cfg_attr(feature = "std", derive(::scale_info::TypeInfo))]
@@ -124,8 +136,6 @@ mod chronicle {
             self.cars_by_vin.get(vin).ok_or(Error::CarNotFound)
         }
 
-        
-
         #[ink(message)]
         /// Returns the list of cars owned by a single owner, returns an error if the owner is not found
         pub fn get_cars_owned_by_single_owner(
@@ -185,7 +195,7 @@ mod chronicle {
 
             // insert owner with the new car
             self.owners.insert(owner, &owner_cars);
-            
+
             // insert car into the list of cars
             self.cars.push(car.clone());
 
@@ -202,7 +212,15 @@ mod chronicle {
 
             // ensure car is already registered
             let mut car = self.cars_by_vin.get(&vin).ok_or(Error::CarNotFound)?;
-            car.log.extend(logs);
+
+            // update car logs for mapping field (vin -> car)
+            car.log.extend(logs.clone());
+
+            // update car logs for cars vector
+            self.cars.iter().position(|v| v.vin == vin).map(|i| {
+                car.log.extend(logs);
+                self.cars[i] = car.clone();
+            });
 
             Ok(car.clone())
         }
@@ -242,11 +260,74 @@ mod chronicle {
 
             Ok(())
         }
+
         #[ink(message)]
-        pub fn check_single_car_health(&self, vin: String) -> Result<Vec<Log>, Error> {
+        pub fn check_single_car_logs(&self, vin: String) -> Result<Vec<Log>, Error> {
             let car = self.cars_by_vin.get(&vin).ok_or(Error::CarNotFound)?;
             let logs = car.log.clone();
             Ok(logs)
+        }
+
+        #[ink(message)]
+        pub fn get_all_cars(&self) -> Vec<CarData> {
+            self.cars.clone()
+        }
+
+        #[ink(message)]
+        pub fn get_single_car_health(&self, vin: String) -> Result<CarHealth, Error> {
+            let car = self.cars_by_vin.get(&vin).ok_or(Error::CarNotFound)?;
+            let logs = car.log.clone();
+
+            let average_distance_with_milage = Self::calculate_average_distance_with_milage(&logs);
+
+            if average_distance_with_milage > 40000 && average_distance_with_milage < 3000000 {
+                Ok(CarHealth::Excellent)
+            } else if average_distance_with_milage > 40000 && average_distance_with_milage < 4000000
+            {
+                Ok(CarHealth::Good)
+            } else if average_distance_with_milage > 40000 && average_distance_with_milage > 5000000
+            {
+                Ok(CarHealth::Fair)
+            } else {
+                Ok(CarHealth::Bad)
+            }
+        }
+
+        fn calculate_average_distance_with_milage(logs: &[Log]) -> u64 {
+            let (total_distance, logs_with_distance) =
+                logs.iter().fold((0u64, 0u64), |acc, log| {
+                    if log.command == CarCommand::DistanceWithMil {
+                        (acc.0 + log.value.parse::<u64>().unwrap_or(0), acc.1 + 1)
+                    } else {
+                        acc
+                    }
+                });
+
+            if logs_with_distance > 0 {
+                total_distance / logs_with_distance
+            } else {
+                0
+            }
+        }
+
+        #[ink(message)]
+        pub fn predict_car_market_value(&self, vin: String) -> Result<u64, Error> {
+
+            let _car = self.cars_by_vin.get(&vin).ok_or(Error::CarNotFound)?;
+
+            // get car's health
+            let car_health = self.get_single_car_health(vin.clone())?;
+
+            // predict car's market value based on health
+            if car_health == CarHealth::Fair {
+                return Ok(1000);
+            } else if car_health == CarHealth::Good {
+                return Ok(2000);
+            } else if car_health == CarHealth::Excellent {
+                return Ok(3000);
+            } else {
+                return Ok(0);
+            }
         }
     }
 
@@ -265,10 +346,18 @@ mod chronicle {
             ink::env::test::set_caller::<Environment>(sender);
         }
 
+        fn build_contract() -> Chronicle {
+            let contract = Chronicle::new();
+            let user = default_accounts().alice;
+            set_caller(user);
+
+            contract
+        }
+
         #[ink::test]
         #[should_panic(expected = "No insurance")]
         pub fn test_add_car_without_insurance() {
-            let mut contract = Chronicle::new();
+            let mut contract = build_contract();
             let model = String::from("Toyota");
             let vin = String::from("123456789");
             let logs = vec![Log {
@@ -289,7 +378,7 @@ mod chronicle {
         pub fn test_add_car_with_insurance() {
             let user = default_accounts().alice;
 
-            let mut contract = Chronicle::new();
+            let mut contract = build_contract();
             let model = String::from("Toyota");
             let vin = String::from("123456789");
             let logs = vec![Log {
