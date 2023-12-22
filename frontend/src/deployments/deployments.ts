@@ -8,12 +8,21 @@ import { SubstrateDeployment } from '@scio-labs/use-inkathon'
 export enum ContractIds {
   Greeter = 'greeter',
   Insurance = 'insurance',
+  Chronicle = 'chronicle',
 }
 
 export const getDeployments = async (): Promise<SubstrateDeployment[]> => {
   const networks = env.supportedChains
   const deployments = networks
     .map(async (network) => [
+      {
+        contractId: ContractIds.Chronicle,
+        networkId: network,
+        abi: await import(
+          `@inkathon/contracts/deployments/${ContractIds.Chronicle}/${ContractIds.Chronicle}.json`
+        ),
+        address: 'aRGrqzUQVJ2EkJB8sqPDKHNXmrpm7wkoHtBSDXS7MHJoGRK',
+      },
       {
         contractId: ContractIds.Insurance,
         networkId: network,

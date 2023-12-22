@@ -28,6 +28,7 @@
     "@emotion/react": "^11.11.1",
     "@emotion/server": "^11.11.0",
     "@emotion/styled": "^11.11.0",
+    "@headlessui/react": "^1.7.17",
     "@inkathon/contracts": "workspace:*",
     "@polkadot/api": "^10.10.1",
     "@polkadot/api-contract": "^10.10.1",

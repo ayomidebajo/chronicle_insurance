@@ -1,55 +1,102 @@
 
 
-## About 📖
+## About the Chronicle  📖
+
+#### Motivation
+
+We live in a world where we interact based on trust and now we can verify using web3.0. We can verify the authenticity of the data and the source of the data. We can verify the data is not tampered with and we can verify the data is not fake.
+
+In Nigeria 🇳🇬 and many parts of Africa, cars are sold at second hand prices and the buyer has no way of knowing the history of the car. The buyer has no way of knowing if the car has been in an accident or if the car has been stolen. 
+
+Most time cars are sold at a higher price than the actual market value. The buyer has no way of knowing the actual market value of the car. Insurance companies have no way of verifying the history of the car. they also have no way of verifying the market value of the car and also no way of verifying the health of the car.
+
+With Chronicle Dapp, users can purchase insurance and verify the history of the car, using OBD2 data while also providing transparency of market value for cars registered on its platform.
+
+##### What is OBD2?
+
+On-Board Diagnostics (OBD) is a standardized system integrated into modern vehicles to monitor and report the performance of various components. It utilizes sensors and diagnostic tools to gather information about the engine, transmission, and emissions systems. The primary purpose of OBD is to identify and diagnose malfunctions, providing mechanics and car owners with specific fault codes that pinpoint issues within the vehicle. This real-time data enables efficient and accurate troubleshooting, leading to timely repairs and maintenance. OBD plays a crucial role in enhancing vehicle reliability, improving fuel efficiency, and aiding in emission control, contributing to safer and more environmentally friendly driving experiences.
+
+
+#### What it does
+
+Chronicle Dapp is built for users that want to take control of their data. Using OBD2 technology, users can submit their car data to the blockchain. The data is stored on the blockchain and can be accessed by anyone. The data is immutable and cannot be tampered with. The data is stored on the blockchain forever. Users can verify the authenticity of the data and the source of the data. 
+
+This means in a real world scenerio, you won't have to worry about buying a stolen car or a car that has been in an accident. You can verify the history of the car using the data from the blockchain.
+
+
+##### Features
+
+- Don't trust, Verify: Users can verify the history of the car using the data from the blockchain. ✅ 
+
+- Purchase Insurance without hassle: Users can purchase insurance for their car using the data from the blockchain. ✅  
+
+- Using VINs(just for the mvp): Every car has a unique id and the data is stored on the blockchain forever. ✅
+
+- Transparency: Everyone can access the data on the blockchain. ✅
+
+- Predictive analysis: We can use the data to predict the market value of the car. ✅
+
+- View Car's health at a glance: We can use the data to view the health of the car. ✅
+
+
+
+#### How we built it
+
+We built the smart contracts using ink! smart contracts. We deployed the smart contract on the blockchain. We used the obd2 python library and utilized `elm` (a library for running simulated vehicles on pc) in helping to simulate a vehicle, these parts work hand in hand to give an ideal real-world scenerio car data. We used nextjs to build the frontend. We also used typescript for the frontend. 
+
+
+#### How it works
+
+The user purchases insurance for themselves. After purchaing insurance, the user can submit their car data to the blockchain. The registered cars can now be viewed by anyone including car's health and market price prediction.
+
+##### Tech stack
+
+- Ink! Smart contracts
+- Python
+- Nextjs
+- Typescript
+
+##### Team
+
+- [Bolaji Ahmad]()
+- [Ayomide Bajo]()
+
+### Project directory
 
 The contracts directory contains the following folders:
 - `src/`
- 1. Contains the `Greeter` contract
- 2. Contains the `Chronicle` contract
- 3. Contains the `Insurance` contract
 
-- `deployments/` – Contains the deployment artifacts for the `Greeter`, `Chronicle`, `Insurance`, contracts
+ 1. Contains the `Chronicle` contract
+ 2. Contains the `Insurance` contract
+
+- `deployments/` – Contains the deployment artifacts for the `Chronicle`, `Insurance`, contracts
 - `scripts/` – Contains scripts to build, test, and deploy the contracts
 
 The Obd directory contains more information about the Obd project. For more information about how to run the obd project, please refer to the README.md file in the obd directory.
 
 
-###
-Mock data
+### Mock data
 
 We stored some mock data from the car for user's who don't use a linux laptop, The mock data is stored in `response.json`
+
+P.S you'll need to edit the frontend code to use the mock data, please refer to the README.md file in the frontend directory for more information.
 
 
 ## Getting started 🚀
 
-### 1. Run the frontend
 
-The frontend works out of the box, without a local node running, as the sample contract is pre-deployed on certain live testnets (i.e. `alephzero-testnet` and `shibuya`). Necessary deployment metadata and addresses are provided under `contracts/deployments/`.
+
+### 1. Run the simulated car
+   *install the requirements.txt in obd*
+
+   Please read the README.md file in the obd directory for more information.
+
+
+### 2. Run the frontend
+
 
 > **Pre-requisites:**
->
-> - Setup Node.js v18+ (recommended via [nvm](https://github.com/nvm-sh/nvm) with `nvm install 18`)
-> - Install [pnpm](https://pnpm.io/installation) (recommended via [Node.js Corepack](https://nodejs.org/api/corepack.html) or `npm i -g pnpm`)
-> - Clone this repository
 
-<details>
-<summary><strong>Special Instructions for Windows Users</strong></summary>
-
-> [!IMPORTANT]  
-> Windows users must either use [WSL](https://learn.microsoft.com/windows/wsl/install) (recommended) or a custom shell like [Git Bash](https://git-scm.com/downloads). PowerShell is not supported.
-
-> **Pre-requisites when using WSL for Linux:**
->
-> - Install [WSL](https://learn.microsoft.com/windows/wsl/install) and execute _all_ commands in the WSL terminal
-> - Setup Node.js v18+ (recommended via [nvm](https://github.com/nvm-sh/nvm) with `nvm install 18`)
-> - Install the following npm packages globally:
-> - `npm i -g npm`
-> - `npm i -g pnpm node-gyp make`
-> - Clone this repository into the WSL file system (e.g. `/home/<user>/inkathon`).
->
-> **Tip:** You can enter `\\wsl$\` in the top bar of the Windows Explorer to access the WSL file system visually.
-
-</details>
 
 ```bash
 # Install dependencies (once)
@@ -58,101 +105,6 @@ pnpm install
 
 # Start Next.js frontend
 pnpm run dev
-```
-
-Optionally, to enable [`simple-git-hooks`](https://github.com/toplenboren/simple-git-hooks) (for automatic linting & formatting when committing), you can run the following command once: `pnpm simple-git-hooks`.
-
-### 2. install the requirements.txt in obd
-   Please read the README.md file in the obd directory for more information.
-
-## Customization 🎨
-
-### 1. Project Name
-
-There are multiple places where you need to insert your project's name and identifier. Most of these occurrences are highlighted with a `/* TODO */` comment in the code. You can easily replace them one by one by installing the [`todo-tree`](https://marketplace.visualstudio.com/items?itemName=gruntfuggly.todo-tree) plugin.
-
-Additionally, there are the following un-highlighted occurrences:
-
-- the name of the `inkathon.code-workspace` file
-- the `package.json`'s name & metadata in the root directory as well as in the `contracts/` and `frontend/` packages
-- the workspace dependency (`@inkathon/contracts`) defined in `frontend/package.json` and imported in `frontend/src/deployments/deployments.ts`
-
-### 2. Custom Contracts
-
-To replace the default `Greeter` contract or add a new one, you need to do the following:
-
-- Add a new contract directory under `contracts/src/`
-- Add it as another workspace member to the `contracts/Cargo.toml` file
-- Add another deployment script or adjust `contracts/scripts/deploy.ts`
-- Adjust the `ContractIds` enum and `getDeployments` function in `frontend/src/deployments/deployments.ts`
-
-### 3. Custom Scripts
-
-Adding custom scripts is useful to interact with your contracts or test certain functionality. Therefore, just duplicate & reuse the `contracts/scripts/script.template.ts` file and run it via `pnpm run script <script-name>`. This command will run the TypeScript file directly via [`tsx`](https://github.com/privatenumber/tsx).
-
-For general scripts, the same environment variable initialization & configuration applies as described below in the [Deployment](#deployment) section (e.g. to change the target network).
-
-
-## Deployment 🚢
-
-Spinning up a deployment via Vercel is pretty straightforward as the necessary settings are already configured in `vercel.json`. If you haven't cloned the repository yet, you can also use the **Deploy** button below to create a new repository from this template.
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fhello-world&env=NEXT_PUBLIC_DEFAULT_CHAIN&envDescription=Insert%20%60alephzero-testnet%60%20or%20%60shibuya%60&envLink=https%3A%2F%2Fgithub.com%2Fscio-labs%2Finkathon%23environment-variables&project-name=inkathon&repository-name=inkathon&redirect-url=https%3A%2F%2Fgithub.com%2Fscio-labs%2Finkathon&demo-url=https%3A%2F%2Finkathon.xyz)
-
-### Environment Variables
-
-One key element making this boilerplate so flexible is the usage of environment variables to configure the active network in the frontend. This is done by setting the `NEXT_PUBLIC_DEFAULT_CHAIN` variable in the `frontend/.env.local` file, or in the Vercel deployment settings respectively.
-
-<details>
-<summary><strong>All Supported Chain Constants</strong></summary>
-
-| Network Identifier  | Name                    | Type    |
-| ------------------- | ----------------------- | ------- |
-| `development`       | ️Local Development Node | Testnet |
-| `alephzero-testnet` | Aleph Zero Testnet      | Testnet |
-| `rococo`            | Rococo                  | Testnet |
-| `shibuya`           | Shibuya Testnet         | Testnet |
-| `shiden`            | Shiden                  | Mainnet |
-| `alephzero`         | Aleph Zero              | Mainnet |
-| `astar`             | Astar                   | Mainnet |
-
-<small>Source: https://github.com/scio-labs/use-inkathon/blob/main/src/chains.ts</small>
-
-> [!NOTE]  
-> Chains can also be supplied manually by creating a [`SubstrateChain`](https://github.com/scio-labs/use-inkathon/blob/main/src/chains.ts#L4) object. If you think a chain is missing, please open an issue or PR.
-
-</details>
-
-All environment variables are imported from `process.env` in [`frontend/src/config/environment.ts`](https://github.com/scio-labs/inkathon/blob/main/frontend/src/config/environment.ts) for type safety.
-
-| Environment Variables           | [Default Values](https://github.com/scio-labs/inkathon/blob/main/frontend/.env.local.example) | Description                                                                                                                                                         |
-| ------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_DEFAULT_CHAIN` \*️⃣ | ️`alephzero-testnet`                                                                          | The network (Substrate-based chain) the frontend should connect to by default and what contract deployment artifacts to import.                                     |
-| `NEXT_PUBLIC_PRODUCTION_MODE`   | `false`                                                                                       | Optional boolean flag to differentiate production environment (e.g. for SEO or Analytics).                                                                          |
-| `NEXT_PUBLIC_URL`               | `http://localhost:3000`                                                                       | Optional string that defines the base URL of the frontend (will be auto-inferred from Vercel environment variables).                                                |
-| `NEXT_PUBLIC_SUPPORTED_CHAINS`  | –                                                                                             | Optional array with network identifers (e.g. `["alephzero-testnet", "shibuya"]`) that are supported by the frontend, **if the dApp is supposed to be multi-chain**. |
-
-<small>\*️⃣ Required </small>
-
-### Contract Deployment
-
-In the [Getting Started](#getting-started) section above, we've already deployed the sample `Greeter` contract on a local node. To target a live network, we can use the `CHAIN` environment variable when running the `deploy` script.
-
-```bash
-CHAIN=alephzero-testnet pnpm run deploy
-```
-
-Further, dynamically loaded environment files with the `.env.{chain}` naming convention can be used to add additional configuration about the deployer account.
-
-```bash
-# .env.alephzero-testnet
-ACCOUNT_URI=bottom drive obey lake curtain smoke basket hold race lonely fit walk//Alice
-```
-
-When running the same script again, this deployer account defined there will be used to sign the extrinsic.
-
-> [!WARNING]  
-> These files are gitignored by default, but you should still be extra cautious when adding sensitive information to them.
 
 
 

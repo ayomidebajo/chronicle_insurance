@@ -29,7 +29,6 @@ import {
 import Image from 'next/image'
 import aznsIconSvg from 'public/icons/azns-icon.svg'
 import { FC, useMemo, useState } from 'react'
-import { toast } from 'react-hot-toast'
 import { AiOutlineCheckCircle, AiOutlineDisconnect } from 'react-icons/ai'
 import { FiChevronDown, FiExternalLink } from 'react-icons/fi'
 import 'twin.macro'
@@ -149,6 +148,14 @@ export const ConnectButton: FC<ConnectButtonProps> = () => {
             </Text>
           </VStack>
         </MenuButton>
+
+        <Button key={activeChain?.network} rounded="2xl">
+          <VStack align="start" spacing={0}>
+            <HStack>
+              <Text>{activeChain?.name}</Text>
+            </HStack>
+          </VStack>
+        </Button>
       </HStack>
 
       <MenuList
@@ -159,7 +166,7 @@ export const ConnectButton: FC<ConnectButtonProps> = () => {
         overflow="scroll"
       >
         {/* Supported Chains */}
-        {supportedChains.map((chain) => (
+        {/* {supportedChains.map((chain) => (
           <MenuItem
             key={chain.network}
             isDisabled={chain.network === activeChain?.network}
@@ -176,10 +183,7 @@ export const ConnectButton: FC<ConnectButtonProps> = () => {
               </HStack>
             </VStack>
           </MenuItem>
-        ))}
-
-        {/* Available Accounts/Wallets */}
-        <MenuDivider />
+        ))} */}
         {(accounts || []).map((acc) => {
           const encodedAddress = encodeAddress(acc.address, activeChain?.ss58Prefix || 42)
           const truncatedEncodedAddress = truncateHash(encodedAddress, 10)
