@@ -1,6 +1,6 @@
 {
   "source": {
-    "hash": "0x6d6c524780e5d76c878c4bb4d6491b91dcd8148a1b86f0429cf19bb7f3b5842c",
+    "hash": "0x0c7c6846140f9b65c5855ea65d4dd922ee919365ebcdc845202a221a9651574b",
     "language": "ink! 4.3.0",
     "compiler": "rustc 1.73.0",
     "build_info": {
@@ -330,17 +330,7 @@
         "selector": "0xa1175100"
       },
       {
-        "args": [
-          {
-            "label": "premium",
-            "type": {
-              "displayName": [
-                "Balance"
-              ],
-              "type": 11
-            }
-          }
-        ],
+        "args": [],
         "default": false,
         "docs": [],
         "label": "purchase_insurance",
@@ -976,11 +966,19 @@
               },
               {
                 "index": 6,
-                "name": "BalanceTooLow"
+                "name": "ExpectedPayment"
               },
               {
                 "index": 7,
+                "name": "BalanceTooLow"
+              },
+              {
+                "index": 8,
                 "name": "CarAlreadyRegistered"
+              },
+              {
+                "index": 9,
+                "name": "ExpectedPremiumPriceProvided"
               }
             ]
           }

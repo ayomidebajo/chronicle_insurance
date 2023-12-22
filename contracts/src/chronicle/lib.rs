@@ -19,7 +19,7 @@ mod chronicle {
         owner: AccountId,
     }
 
-    const DEFAULT_PREMIUM: Balance = 1;
+    const DEFAULT_PREMIUM: Balance = 12;
 
     #[derive(Encode, Decode, Debug, PartialEq, Clone)]
     #[cfg_attr(
@@ -61,6 +61,7 @@ mod chronicle {
         ExpectedPayment,
         BalanceTooLow,
         CarAlreadyRegistered,
+        ExpectedPremiumPriceProvided,
     }
 
     #[derive(Encode, Decode, Debug, PartialEq, Clone)]
@@ -241,6 +242,7 @@ mod chronicle {
         }
 
         #[ink(message, payable)]
+        // might return owner address instead of ()
         pub fn purchase_insurance(&mut self) -> Result<(), Error> {
             let caller = self.env().caller();
 
@@ -248,20 +250,13 @@ mod chronicle {
                 return Err(Error::AlreadyHasInsurance);
             }
 
-
             let transfered_val = self.env().transferred_value();
 
-            if transfered_val < DEFAULT_PREMIUM {
-                return Err(Error::ExpectedPayment);
+            let multiplier: Balance = 1000000000000;
+
+            if transfered_val != DEFAULT_PREMIUM.checked_mul(multiplier).unwrap_or_default() {
+                return Err(Error::ExpectedPremiumPriceProvided);
             }
-
-            let transfered_val = self.env().transferred_value();
-
-            assert!(
-                transfered_val == DEFAULT_PREMIUM,
-                "{}",
-                format!("Please pay complete amount which is {}", DEFAULT_PREMIUM)
-            );
 
             ink::env::debug_println!("Expected value: {}", DEFAULT_PREMIUM);
             ink::env::debug_println!(
@@ -270,10 +265,7 @@ mod chronicle {
             ); // we are printing the expected value as is
 
             // make payment
-            match self
-                .env()
-                .transfer(self.env().account_id(), DEFAULT_PREMIUM)
-            {
+            match self.env().transfer(caller, DEFAULT_PREMIUM) {
                 Ok(_) => {
                     // Emit event
                     self.env().emit_event(InsurancePurchased {
@@ -284,14 +276,12 @@ mod chronicle {
                     // Push to storage
                     self.insurance_premiums.insert(caller, &DEFAULT_PREMIUM);
                     self.has_insurance.insert(caller, &true);
-                    
+
                     Ok(())
                 }
                 Err(_) => Err(Error::TransactionFailed)?,
             }
-
         }
-
 
         #[ink(message)]
         pub fn check_single_car_logs(&self, vin: String) -> Result<Vec<Log>, Error> {
@@ -422,13 +412,9 @@ mod chronicle {
             // set caller which is the customer_account in this case
             set_caller(user.bob);
 
-            ink::env::test::set_value_transferred::<ink::env::DefaultEnvironment>(
-                DEFAULT_PREMIUM,
-            );
+            ink::env::test::set_value_transferred::<ink::env::DefaultEnvironment>(DEFAULT_PREMIUM);
 
-            ink::env::test::transfer_in::<ink::env::DefaultEnvironment>(
-                DEFAULT_PREMIUM,
-            );
+            ink::env::test::transfer_in::<ink::env::DefaultEnvironment>(DEFAULT_PREMIUM);
 
             contract.purchase_insurance().unwrap();
 
@@ -451,7 +437,43 @@ mod chronicle {
 
             // check if car has been added by getting a single car
             assert!(contract.get_single_car(vin.clone()).is_ok());
+        }
 
+        #[ink::test]
+        pub fn test_update_car_logs() {
+            let user = default_accounts();
+            let mut contract = build_contract();
+            let model = String::from("Toyota");
+            let vin = String::from("123456789");
+            let logs = vec![Log {
+                command: CarCommand::EngineLoad,
+                value: String::from("10"),
+                desc: String::from("Engine Load"),
+                command_code: String::from("01"),
+                ecu: 1,
+                timestamp: 123456789,
+            }];
+
+            set_caller(user.alice);
+            contract.purchase_insurance().unwrap();
+
+            let car = contract.add_car(model.clone(), vin.clone(), logs).unwrap();
+
+            assert_eq!(car.model, model);
+
+
+            let new_logs = vec![Log {
+                command: CarCommand::EngineLoad,
+                value: String::from("100"),
+                desc: String::from("Engine Load"),
+                command_code: String::from("01"),
+                ecu: 1,
+                timestamp: 123456789,
+            }];
+
+            let updated_car = contract.update_car_logs(vin.clone(), new_logs).unwrap();
+            assert_eq!(updated_car.log.len(), 2);
+            assert_eq!(updated_car.log[1].value, String::from("100"));
         }
     }
 }
