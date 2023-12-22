@@ -16,12 +16,20 @@ export const getDeployments = async (): Promise<SubstrateDeployment[]> => {
   const deployments = networks
     .map(async (network) => [
       {
-        contractId: ContractIds.Insurance,
+        contractId: ContractIds.Chronicle,
         networkId: network,
         abi: await import(
           `@inkathon/contracts/deployments/${ContractIds.Chronicle}/${ContractIds.Chronicle}.json`
         ),
-        address: 'bTDpjqEahB2KeUnaUoCfqVyv979GVht6zZY4H5DnAyvm6jP',
+        address: 'aRGrqzUQVJ2EkJB8sqPDKHNXmrpm7wkoHtBSDXS7MHJoGRK',
+      },
+      {
+        contractId: ContractIds.Insurance,
+        networkId: network,
+        abi: await import(
+          `@inkathon/contracts/deployments/${ContractIds.Insurance}/${ContractIds.Insurance}.json`
+        ),
+        address: 'ZSxc6CVSokuMmbuHxxmrjgi1xnfNxt5FEamvKNPEeRHvrT6',
       },
     ])
     .reduce(async (acc, curr) => [...(await acc), ...(await curr)], [] as any)

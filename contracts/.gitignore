@@ -125,10 +125,6 @@ fabric.properties
 # Substrate Contracts Node Persistence Cache
 .node-data
 
-# Local deployments
-deployments/**/development.json
-deployments/**/development.ts
-
 # Environment files
 *.env*
 !.env*.example
