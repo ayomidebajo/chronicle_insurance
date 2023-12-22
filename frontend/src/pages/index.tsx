@@ -1,17 +1,41 @@
+import { AddNewCarView } from '@/components/modals/AddCarModal'
 import { RegisterAccountView } from '@/components/modals/RegisterOwner'
+import { ViewCarData } from '@/components/modals/ViewCarData'
+import { CarData, useChronicleContracts } from '@/contexts/Insurance'
+import { truncateHash } from '@/utils/truncateHash'
+import { Spinner } from '@chakra-ui/react'
 import { useInkathon } from '@scio-labs/use-inkathon'
 import type { NextPage } from 'next'
-import { useEffect } from 'react'
-import { toast } from 'react-hot-toast'
+import { useEffect, useState } from 'react'
 import 'twin.macro'
 
 const HomePage: NextPage = () => {
-  // Display `useInkathon` error messages (optional)
-  const { error } = useInkathon()
+  const [isPremium, setPremium] = useState(false)
+  const [cars, setCars] = useState<CarData[]>([])
+  const { getCarsOwnedBySingleOwner, getSingleCar, veryifyUserIsPremium } = useChronicleContracts()
+  const { activeAccount } = useInkathon()
+
+  const fetchUserInfo = async () => {
+    if (activeAccount?.address) {
+      const isPremium = await veryifyUserIsPremium(activeAccount.address)
+      setPremium(!!isPremium)
+      const cars = await getCarsOwnedBySingleOwner(activeAccount?.address)
+      if (cars?.length) {
+        const promisedCars = cars.map(async (car) => {
+          const carData = await getSingleCar(car)
+          return carData
+        })
+
+        Promise.all(promisedCars).then((res) => {
+          setCars(res)
+        })
+      }
+    }
+  }
+
   useEffect(() => {
-    if (!error) return
-    toast.error(error.message)
-  }, [error])
+    fetchUserInfo()
+  }, [activeAccount?.address])
 
   return (
     <>
@@ -19,13 +43,57 @@ const HomePage: NextPage = () => {
         <div tw="mt-20 flex w-full items-center justify-between rounded-md bg-slate-100 px-16 py-6">
           <h2 tw="font-bold text-3xl">Cars Owned</h2>
 
-          <div>
-            <RegisterAccountView />
-            {/* <CreateProposalView /> */}
-          </div>
+          <div>{isPremium ? <AddNewCarView /> : <RegisterAccountView />}</div>
         </div>
 
-        <section></section>
+        <section>
+          {cars?.length ? (
+            <ul tw="mt-10">
+              {cars.map((car) => {
+                const { vin, logs, model, owner } = car
+                return (
+                  <div
+                    key={vin}
+                    tw="col-span-1 w-full scale-95 rounded-lg border border-slate-50 bg-slate-300 px-6 py-3 shadow-xl transition hover:scale-100"
+                  >
+                    <div tw="flex items-center justify-between font-bold">
+                      <h2 tw="font-semibold text-lg text-gray-900 uppercase">VIN: {vin}</h2>
+
+                      <p tw="text-blue-700">
+                        Owned By: <strong>{truncateHash(owner)}</strong>
+                      </p>
+                    </div>
+
+                    <ul tw="mt-10 grid grid-cols-2 gap-6">
+                      <li tw="flex flex-col items-start gap-2">
+                        <span>Model</span>
+                        <strong>{model}</strong>
+                      </li>
+
+                      <li tw="flex flex-col items-start gap-2">
+                        <span>Car Health</span>
+                        <strong>Good</strong>
+                      </li>
+
+                      <li tw="flex flex-col items-start gap-2">
+                        <span>Predicted Market Value</span>
+                        <strong>$70</strong>
+                      </li>
+                    </ul>
+
+                    <div>
+                      <ViewCarData car={car} />
+                    </div>
+                  </div>
+                )
+              })}
+            </ul>
+          ) : (
+            <div>
+              <Spinner size="28" colorScheme="teal" />
+            </div>
+          )}
+        </section>
       </div>
     </>
   )

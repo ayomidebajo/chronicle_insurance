@@ -116,7 +116,7 @@ export const ConnectButton: FC<ConnectButtonProps> = () => {
     <Menu>
       <HStack>
         {/* Account Balance */}
-        {/* {balanceFormatted !== undefined && (
+        {balanceFormatted !== undefined && (
           <Button
             py={6}
             pl={5}
@@ -129,7 +129,7 @@ export const ConnectButton: FC<ConnectButtonProps> = () => {
           >
             {balanceFormatted}
           </Button>
-        )} */}
+        )}
 
         {/* Account Name, Address, and AZNS-Domain (if assigned) */}
         <MenuButton

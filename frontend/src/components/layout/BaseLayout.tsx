@@ -1,9 +1,16 @@
-import { FC, PropsWithChildren } from 'react'
+import { useInkathon } from '@scio-labs/use-inkathon'
+import { FC, PropsWithChildren, useEffect } from 'react'
+import toast from 'react-hot-toast'
 import 'twin.macro'
 import { Navbar } from './Navbar'
 import { Sidebar } from './Sidebar'
 
 export const BaseLayout: FC<PropsWithChildren> = ({ children }) => {
+  const { error } = useInkathon()
+  useEffect(() => {
+    if (!error) return
+    toast.error(error.message)
+  }, [error])
   return (
     <>
       <div tw="relative flex min-h-full">

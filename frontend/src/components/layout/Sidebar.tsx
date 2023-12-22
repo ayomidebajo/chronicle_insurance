@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { IconType } from 'react-icons'
-import { FaCarSide, FaPersonDress } from 'react-icons/fa6'
+import { FaCarSide } from 'react-icons/fa6'
 import { RxHome } from 'react-icons/rx'
 import 'twin.macro'
 
@@ -14,7 +14,6 @@ export interface SidebarLink {
 export const sidebarLinks: SidebarLink[] = [
   { name: 'Dashboard', href: '/', id: 'dashboard', icon: RxHome },
   { name: 'Cars', href: '/cars', id: 'cars', icon: FaCarSide },
-  { name: 'Owners', href: '/owners', id: 'owners', icon: FaPersonDress },
 ]
 
 export const Sidebar = () => {

@@ -1,23 +1,25 @@
-import { useChronicleContracts } from '@/contexts/Insurance'
+import { CarData, useChronicleContracts } from '@/contexts/Insurance'
 import { Button } from '@chakra-ui/react'
 import { Dialog } from '@headlessui/react'
 import { Fragment, useState } from 'react'
-import { AiOutlinePlusCircle } from 'react-icons/ai'
 import { FiX } from 'react-icons/fi'
 import 'twin.macro'
 
-export const RegisterAccountView = () => {
-  const [isOpen, setIsOpen] = useState<false | 1 | 2>(false)
+export const ViewCarData = ({ car }: { car: CarData }) => {
+  const [isOpen, setIsOpen] = useState(false)
   const { purchaseInsurance } = useChronicleContracts()
 
   return (
     <Fragment>
       <Button
-        onClick={() => setIsOpen(1)}
-        tw="flex items-center gap-3 bg-blue-500 text-lg hover:bg-blue-700"
+        colorScheme="facebook"
+        tw="mt-10 pb-1 text-lg underline"
+        fontWeight="bold"
+        onClick={() => setIsOpen(true)}
+        color="blue"
+        variant="ghost"
       >
-        <AiOutlinePlusCircle size={20} />
-        Purchase Insurance
+        View More
       </Button>
 
       <Dialog open={!!isOpen} onClose={() => setIsOpen(false)} tw="relative z-50">
@@ -33,7 +35,7 @@ export const RegisterAccountView = () => {
             >
               <FiX size={18} />
             </Button>
-            <Dialog.Title tw="font-bold text-4xl">Purchase your Insurance premium</Dialog.Title>
+            <Dialog.Title tw="font-bold text-4xl">Car Info</Dialog.Title>
 
             <div tw="mt-4">
               <p>
