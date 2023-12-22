@@ -45,6 +45,10 @@ This means in a real world scenerio, you won't have to worry about buying a stol
 We built the smart contracts using ink! smart contracts. We deployed the smart contract on the blockchain. We used the obd2 python library and utilized `elm` (a library for running simulated vehicles on pc) in helping to simulate a vehicle, these parts work hand in hand to give an ideal real-world scenerio car data. We used nextjs to build the frontend. We also used typescript for the frontend. 
 
 
+#### For a visual presentation and demo
+[Click here](https://www.loom.com/share/d172a71b06da4006ba324362e7f36e03?sid=855c3a0c-3a13-482f-a9fe-eae1f8da87a1)
+
+
 #### How it works
 
 The user purchases insurance for themselves. After purchaing insurance, the user can submit their car data to the blockchain. The registered cars can now be viewed by anyone including car's health and market price prediction.
