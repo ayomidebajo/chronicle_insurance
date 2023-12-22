@@ -83,14 +83,10 @@ const HomePage: NextPage = () => {
 
                       <li tw="flex flex-col items-start gap-2">
                         <span>Car Health</span>
-                        <button onClick={() => setShowHealth(!showHealth)}><strong>Click me to view car health!</strong></button>
+                        <button onClick={() => setShowHealth(!showHealth)}><strong>Click me to view car health and price!</strong></button>
                         <div>{showHealth && <ViewCarHealth car={vin} />}</div>
                       </li>
 
-                      <li tw="flex flex-col items-start gap-2">
-                        <span>Predicted Market Value</span>
-                        <strong>$70</strong>
-                      </li>
                     </ul>
 
                     {/* <div>
