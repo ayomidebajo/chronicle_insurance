@@ -22,7 +22,9 @@ const HomePage: NextPage = () => {
   return (
     <>
       <div tw="mb-10 px-5 pt-10">
+      <p>please refresh as neccessary</p>
         <div tw="mt-20 flex w-full items-center justify-between rounded-md bg-slate-100 px-16 py-6">
+          
           <h2 tw="font-bold text-3xl">Cars Owned</h2>
 
           <div>{isPremium ? <AddNewCarView /> : <RegisterAccountView />}</div>

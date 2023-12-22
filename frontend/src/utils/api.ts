@@ -1,4 +1,5 @@
-import { Log } from '@/contexts/Insurance'
+import { CarData, Log } from '@/contexts/Insurance'
+// this is mockdata, you can use this if you don't want to run the server environment for running the simulated car
 import * as Data from './response.json'
 
 export enum CarCommand {
@@ -23,6 +24,11 @@ export function getCarCommand(cmd: string): CarCommand {
   return command
 }
 export async function fetchCarLogs(vin: string) {
+  // here we are making a get request to the server environment handling both the simulated car and the making requests to the simulated car
+  let res = await fetch("http://127.0.0.1:8000");
+  
+  const Data: CarData = await res.json();
+  // console.log(Data, "data from server")
   const carLogs = Object.entries(Data)
     .filter(([key]) => key.includes('_'))
     .map(([key, value]) => {

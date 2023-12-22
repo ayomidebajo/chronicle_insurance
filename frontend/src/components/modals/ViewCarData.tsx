@@ -39,7 +39,7 @@ export const ViewCarData = ({ car }: { car: CarData }) => {
 
             <div tw="mt-4">
               <p>
-                <span tw="font-bold">This might cost you as much as 100SBY</span>
+                <span tw="font-bold">This might cost you 1 AZERO</span>
               </p>
             </div>
 

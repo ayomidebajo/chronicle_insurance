@@ -57,7 +57,7 @@ __pycache__/
 *$py.class
 
 # Python Virtual Environment
-.venv/
+venv/
 
 # Custom ELM log
 elm.log

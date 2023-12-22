@@ -37,12 +37,15 @@ export const RegisterAccountView = () => {
 
             <div tw="mt-4">
               <p>
-                <span tw="font-bold">This might cost you as much as 100SBY</span>
+                <span tw="font-bold">This might cost you as much as 12 AZERO</span>
               </p>
             </div>
 
             <div tw="mt-14 flex w-full justify-center">
-              <Button onClick={() => purchaseInsurance()}>Agree &amp; Submit</Button>
+              <Button onClick={() => {
+                purchaseInsurance();
+                setIsOpen(false);
+              }}>Agree &amp; Submit</Button>
             </div>
           </Dialog.Panel>
         </div>
