@@ -12,11 +12,29 @@ import 'twin.macro'
 const HomePage: NextPage = () => {
   const [isPremium, setPremium] = useState(false)
   const [cars, setCars] = useState<CarData[]>([])
-  const { getAllCars } = useChronicleContracts()
+  const { getCarsOwnedBySingleOwner, getSingleCar, veryifyUserIsPremium } = useChronicleContracts()
   const { activeAccount } = useInkathon()
 
+  const fetchUserInfo = async () => {
+    if (activeAccount?.address) {
+      const isPremium = await veryifyUserIsPremium(activeAccount.address)
+      setPremium(!!isPremium)
+      const cars = await getCarsOwnedBySingleOwner(activeAccount?.address)
+      if (cars?.length) {
+        const promisedCars = cars.map(async (car) => {
+          const carData = await getSingleCar(car)
+          return carData
+        })
+
+        Promise.all(promisedCars).then((res) => {
+          setCars(res)
+        })
+      }
+    }
+  }
+
   useEffect(() => {
-    getAllCars().then((cars) => setCars(cars))
+    fetchUserInfo()
   }, [activeAccount?.address])
 
   return (
@@ -72,7 +90,7 @@ const HomePage: NextPage = () => {
             </ul>
           ) : (
             <div>
-              <Spinner size="lg" colorScheme="teal" />
+              <Spinner size="28" colorScheme="teal" />
             </div>
           )}
         </section>

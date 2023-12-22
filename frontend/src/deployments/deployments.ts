@@ -21,7 +21,7 @@ export const getDeployments = async (): Promise<SubstrateDeployment[]> => {
         abi: await import(
           `@inkathon/contracts/deployments/${ContractIds.Chronicle}/${ContractIds.Chronicle}.json`
         ),
-        address: 'aRGrqzUQVJ2EkJB8sqPDKHNXmrpm7wkoHtBSDXS7MHJoGRK',
+        address: '5Hi3JgrTMGTVckBbBmPs8nfok4VUPykgk8JjnTSbxn8Mb2iq',
       },
       {
         contractId: ContractIds.Insurance,

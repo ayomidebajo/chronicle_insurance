@@ -15,6 +15,7 @@ interface ContextProps {
   doesCarHaveChronicle: (userID: string) => Promise<boolean | null>
   purchaseInsurance: (balance?: number) => Promise<void>
   fileClaim: () => Promise<void>
+  getAllCars: () => Promise<CarData[]>
   getSingleCar: (vin: string) => Promise<any>
   getCarsOwnedBySingleOwner: (userID: string) => Promise<string[]>
   addCar: (vin: string, model: string, log: Log[], make?: string) => Promise<any>
@@ -98,7 +99,7 @@ export default function ChronicleContractContextProvider({ children }: PropsWith
     }
   }
 
-  const purchaseInsurance = async (balance = 100) => {
+  const purchaseInsurance = async () => {
     if (!api || !contract) {
       toast.error('Chronicle Contract cannot be initialized')
       return
@@ -114,9 +115,9 @@ export default function ChronicleContractContextProvider({ children }: PropsWith
         contract,
         'purchase_insurance',
         {
-          value: 1,
+          value: 12 * 10 ** 12,
         },
-        [balance],
+        [],
       )
     } catch (error) {
       console.error(error)
@@ -158,6 +159,29 @@ export default function ChronicleContractContextProvider({ children }: PropsWith
       if (isError) throw new Error(decodedOutput)
 
       return output.Ok
+    } catch (error) {
+      console.error({ error })
+      toast.error('Error occurred, please try again!')
+      return null
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const getAllCars = async () => {
+    if (!api || !contract) {
+      toast.error('Chronicle Contract cannot be initialized')
+      return
+    }
+    setSubmitting(true)
+
+    try {
+      const response = await contractQuery(api, '', contract, 'get_all_cars', {}, [])
+      const { output, isError, decodedOutput } = decodeOutput(response, contract, 'get_all_cars')
+      if (isError) throw new Error(decodedOutput)
+
+      console.log({ output })
+      return output
     } catch (error) {
       console.error({ error })
       toast.error('Error occurred, please try again!')
@@ -257,6 +281,7 @@ export default function ChronicleContractContextProvider({ children }: PropsWith
         getSingleCar,
         getCarsOwnedBySingleOwner,
         updateCarLogs,
+        getAllCars,
         // add missing functions here
       }}
     >
