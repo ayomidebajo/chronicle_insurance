@@ -1,6 +1,7 @@
 import { AddNewCarView } from '@/components/modals/AddCarModal'
 import { RegisterAccountView } from '@/components/modals/RegisterOwner'
 import { ViewCarData } from '@/components/modals/ViewCarData'
+import { ViewCarHealth } from '@/components/modals/ViewCarHealth'
 import { CarData, useChronicleContracts } from '@/contexts/Insurance'
 import { truncateHash } from '@/utils/truncateHash'
 import { Spinner } from '@chakra-ui/react'
@@ -11,8 +12,9 @@ import 'twin.macro'
 
 const HomePage: NextPage = () => {
   const [isPremium, setPremium] = useState(false)
+  const [showHealth, setShowHealth] = useState(false)
   const [cars, setCars] = useState<CarData[]>([])
-  const { getCarsOwnedBySingleOwner, getSingleCar, veryifyUserIsPremium } = useChronicleContracts()
+  const { getCarsOwnedBySingleOwner, getSingleCar, veryifyUserIsPremium, getSingleCarHealth } = useChronicleContracts()
   const { activeAccount } = useInkathon()
 
   const fetchUserInfo = async () => {
@@ -35,12 +37,20 @@ const HomePage: NextPage = () => {
 
   useEffect(() => {
     fetchUserInfo()
+
   }, [activeAccount?.address])
+
+  async function getCarHealth(vin: string) {
+    let data = await getSingleCarHealth(vin).then(res => console.log(res));
+
+
+    // return data;
+  }
 
   return (
     <>
       <div tw="mb-10 px-5 pt-10">
-      <p>please refresh as neccessary</p>
+        <p>please refresh as neccessary</p>
         <div tw="mt-20 flex w-full items-center justify-between rounded-md bg-slate-100 px-16 py-6">
           <h2 tw="font-bold text-3xl">Cars Owned</h2>
 
@@ -73,7 +83,8 @@ const HomePage: NextPage = () => {
 
                       <li tw="flex flex-col items-start gap-2">
                         <span>Car Health</span>
-                        <strong>Good</strong>
+                        <button onClick={() => setShowHealth(!showHealth)}><strong>Click me to view car health!</strong></button>
+                        <div>{showHealth && <ViewCarHealth car={vin} />}</div>
                       </li>
 
                       <li tw="flex flex-col items-start gap-2">

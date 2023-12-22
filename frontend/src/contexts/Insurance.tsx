@@ -20,7 +20,8 @@ interface ContextProps {
   getCarsOwnedBySingleOwner: (userID: string) => Promise<string[]>
   addCar: (vin: string, model: string, log: Log[], make?: string) => Promise<any>
   updateCarLogs: (vin: string, log: CarData) => Promise<void>
-  checkSingleCarHealth?: (vin: string) => Promise<Log[]>
+  getSingleCarHealth: (vin: string) => Promise<CarHealth>
+  predictMarketPrice: (vin: string) => Promise<number>
 }
 
 export interface Log {
@@ -38,6 +39,13 @@ export interface CarData {
   model: string
   logs: Log[]
   owner: string
+}
+
+export enum CarHealth {
+  Good,
+  Bad,
+  Fair,
+  Excellent,
 }
 
 const ChronicleContractContext = createContext<ContextProps | null>(null)
@@ -154,8 +162,53 @@ export default function ChronicleContractContextProvider({ children }: PropsWith
     setSubmitting(true)
 
     try {
-      const response = await contractQuery(api, '', contract, 'getSingleCar', {}, [vin])
-      const { output, isError, decodedOutput } = decodeOutput(response, contract, 'getSingleCar')
+      const response = await contractQuery(api, '', contract, 'get_single_car', {}, [vin])
+      const { output, isError, decodedOutput } = decodeOutput(response, contract, 'get_single_car')
+      if (isError) throw new Error(decodedOutput)
+
+      return output.Ok
+    } catch (error) {
+      console.error({ error })
+      toast.error('Error occurred, please try again!')
+      return null
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+
+  const getSingleCarHealth = async (vin: string) => {
+    if (!api || !contract) {
+      toast.error('Chronicle Contract cannot be initialized')
+      return
+    }
+    setSubmitting(true)
+
+    try {
+      const response = await contractQuery(api, '', contract, 'get_single_car_health', {}, [vin])
+      const { output, isError, decodedOutput } = decodeOutput(response, contract, 'get_single_car_health')
+      if (isError) throw new Error(decodedOutput)
+
+      return output.Ok
+    } catch (error) {
+      console.error({ error })
+      toast.error('Error occurred, please try again!')
+      return null
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const predictMarketPrice = async (vin: string) => {
+    if (!api || !contract) {
+      toast.error('Chronicle Contract cannot be initialized')
+      return
+    }
+    setSubmitting(true)
+
+    try {
+      const response = await contractQuery(api, '', contract, 'predict_car_market_value', {}, [vin])
+      const { output, isError, decodedOutput } = decodeOutput(response, contract, 'predict_car_market_value')
       if (isError) throw new Error(decodedOutput)
 
       return output.Ok
@@ -282,7 +335,8 @@ export default function ChronicleContractContextProvider({ children }: PropsWith
         getCarsOwnedBySingleOwner,
         updateCarLogs,
         getAllCars,
-        // add missing functions here
+        getSingleCarHealth,
+        predictMarketPrice
       }}
     >
       {children}
